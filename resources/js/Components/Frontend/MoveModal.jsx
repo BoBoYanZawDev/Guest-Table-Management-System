@@ -1,15 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Select, message } from "antd";
+import { Select } from "antd";
 import { router } from "@inertiajs/react";
 
 function MoveModal({ open, onClose, tables, selectedGuest }) {
     const [q, setQ] = useState("");
     const [results, setResults] = useState([]);
     const [moving, setMoving] = useState(false);
-    const [messageApi, contextHolder] = message.useMessage();
 
     const [toTableId, setToTableId] = useState("");
-    const [swapGuestId, setSwapGuestId] = useState("");
+    const [swapGuestId, setSwapGuestId] = useState(null);
     const availableTables = useMemo(() => {
         return (tables || []).filter((t) =>
             (t.seats || []).some((s) => !s.assignment?.guest)
@@ -23,7 +22,7 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
                 if (!g || g.id === selectedGuest?.id) return;
                 options.push({
                     value: g.id,
-                    label: `${g.name} — ${t.name} / Seat ${s.seat_no}`,
+                    label: `(${t.name}) - ${g.name}`,
                 });
             });
         });
@@ -59,15 +58,6 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
         return () => clearTimeout(t);
     }, [q, open]);
 
-    function showMoveError(errors) {
-        const firstError =
-            errors?.to_table_id ||
-            errors?.guest_id ||
-            errors?.seat_no ||
-            errors?.name;
-        messageApi.error(firstError || "Unable to move guest.");
-    }
-
     function moveSelectedGuest() {
         if (!selectedGuest) return;
 
@@ -83,10 +73,8 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
                 preserveScroll: true,
                 onFinish: () => setMoving(false),
                 onSuccess: () => {
-                    messageApi.success("Guest moved successfully.");
                     onClose();
                 },
-                onError: showMoveError,
             }
         );
     }
@@ -105,10 +93,8 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
                 preserveScroll: true,
                 onFinish: () => setMoving(false),
                 onSuccess: () => {
-                    messageApi.success("Guest moved successfully.");
                     onClose();
                 },
-                onError: showMoveError,
             }
         );
     }
@@ -127,10 +113,8 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
                 preserveScroll: true,
                 onFinish: () => setMoving(false),
                 onSuccess: () => {
-                    messageApi.success("Seats swapped successfully.");
                     onClose();
                 },
-                onError: showMoveError,
             }
         );
     }
@@ -139,8 +123,7 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
 
     return (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4 z-50 mt-0">
-            {contextHolder}
-            <div className="bg-white w-full max-w-2xl rounded-2xl border p-4 space-y-4">
+            <div className="bg-white w-full max-w-2xl rounded-2xl border p-4 space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="font-bold text-lg">Guest Detail / Move</div>
                     <button
@@ -156,13 +139,13 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
                     <div className="font-semibold">
                         Selected: {selectedGuest?.name || "-"}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-xs text-gray-600">
                         (Name only system — duplicates possible)
                     </div>
                 </div>
 
                 {/* Move controls */}
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-wrap gap-3 items-center justify-center mb-4">
                     <label className="text-sm font-semibold">
                         Move to table:
                     </label>
@@ -186,13 +169,13 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
                     <button
                         onClick={moveSelectedGuest}
                         disabled={!selectedGuest || moving}
-                        className="px-4 py-2 rounded-xl bg-black text-white disabled:opacity-50"
+                        className="px-4 py-2 rounded-xl bg-blue-700 text-white disabled:opacity-50"
                     >
                         Move
                     </button>
                 </div>
 
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-wrap gap-3 items-center justify-center">
                     <label className="text-sm font-semibold">Swap seats:</label>
                     <Select
                         value={swapGuestId}
@@ -202,6 +185,7 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
                         size="large"
                         options={swapOptions}
                         showSearch
+                        allowClear
                         optionFilterProp="label"
                     />
                     <button

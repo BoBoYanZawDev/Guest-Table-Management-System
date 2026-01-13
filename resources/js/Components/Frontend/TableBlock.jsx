@@ -17,7 +17,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
     const capacity = table.capacity || seats.length || 0;
     const rowHeight = 36;
     const minHeight = 250;
-    const maxHeight = 1000;
+    const maxHeight = 600;
     return Math.min(maxHeight, Math.max(minHeight, capacity * rowHeight));
   }, [table, seats.length]);
 
@@ -58,9 +58,9 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
   }
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white shadow-sm">
+    <div className="rounded-2xl border border-black/10 bg-white shadow-sm overflow-hidden">
       {/* Title */}
-      <div className="text-center font-bold py-3 border-b border-black/10">
+      <div className="text-center font-bold py-3 border-b border-black/10 bg-sky-700 text-white">
         {table.name}
       </div>
 
@@ -77,6 +77,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
           const g = s.assignment?.guest || null;
           const isFocused = g && g.id === focusedGuestId;
           const isEditing = !g && editingSeatNo === s.seat_no;
+          const isEmpty = !g && !isEditing;
           return (
             <div
               key={s.id}
@@ -84,7 +85,11 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                 if (g?.id && el) rowRefs.current.set(g.id, el);
               }}
               className={`grid grid-cols-[60px_1fr_120px] border-b border-black/10 text-sm ${
-                isFocused ? "bg-amber-50" : ""
+                isFocused
+                  ? "bg-amber-100/45"
+                  : isEmpty
+                  ? "bg-emerald-100/70 hover:bg-emerald-100/70"
+                  : ""
               }`}
             >
               <div className="p-2 border-r border-black/10">{s.seat_no}</div>
@@ -108,7 +113,11 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                   />
                 </div>
               ) : (
-                <div className="p-2 border-r border-black/10 text-gray-400">
+                <div
+                  className={`p-2 border-r border-black/10 ${
+                    isEmpty ? "text-emerald-700" : "text-gray-400"
+                  }`}
+                >
                   Empty
                 </div>
               )}

@@ -7,6 +7,7 @@ use App\Models\GuestTable;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class FrontendController extends Controller
 {
@@ -96,16 +97,23 @@ class FrontendController extends Controller
         $guest->checked_in = ! $guest->checked_in;
         $guest->save();
 
-        return back();
+        return back()->with(
+            'success',
+            $guest->checked_in ? 'Marked as present.' : 'Marked as absent.'
+        );
     }
 
     public function moveGuest(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'guest_id' => ['required', 'integer', 'exists:guests,id'],
             'to_table_id' => ['nullable', 'integer', 'exists:guest_tables,id'],
             'reason' => ['nullable', 'string', 'max:50'],
         ]);
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
+        $validated = $validator->validated();
 
         $guest = Guest::findOrFail($validated['guest_id']);
 
@@ -114,7 +122,7 @@ class FrontendController extends Controller
             $seatNo = $this->firstAvailableSeat($table->id, (int) $table->capacity);
 
             if (! $seatNo) {
-                return back()->withErrors(['to_table_id' => 'No free seats in that table.']);
+                return back()->with('error', 'No free seats in that table.');
             }
         } else {
             $tables = GuestTable::orderBy('id')->get();
@@ -131,7 +139,7 @@ class FrontendController extends Controller
             }
 
             if (! $table || ! $seatNo) {
-                return back()->withErrors(['to_table_id' => 'No free seats available.']);
+                return back()->with('error', 'No free seats available.');
             }
         }   
 
@@ -145,10 +153,14 @@ class FrontendController extends Controller
 
     public function swapGuests(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'guest_id' => ['required', 'integer', 'exists:guests,id', 'different:with_guest_id'],
             'with_guest_id' => ['required', 'integer', 'exists:guests,id'],
         ]);
+        if ($validator->fails()) {
+            return back()->with('error', $validator->errors()->first());
+        }
+        $validated = $validator->validated();
 
         $guest = Guest::findOrFail($validated['guest_id']);
         $otherGuest = Guest::findOrFail($validated['with_guest_id']);
