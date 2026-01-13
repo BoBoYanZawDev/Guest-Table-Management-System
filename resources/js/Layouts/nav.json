@@ -15,6 +15,12 @@
                 "icon_type": "fas"
             },
             {
+                "name": "Guests",
+                "route": "guests.index",
+                "icon": "users",
+                "icon_type": "fas"
+            },
+            {
                 "name": "Users",
                 "route": "users.index",
                 "icon": "users",

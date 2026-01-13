@@ -43,7 +43,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
                     </div>
                     {!collapsed && (
                         <div className="text-sm font-bold text-gray-500 dark:text-slate-300 text-center">
-                            Rating System
+                            Table Management System
                         </div>
                     )}
                 </div>
