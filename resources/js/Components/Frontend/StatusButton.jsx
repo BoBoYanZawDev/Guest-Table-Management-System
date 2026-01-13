@@ -29,7 +29,7 @@ function StatusButton({ guest }) {
         <button
             type="button"
             onClick={confirmToggle}
-            className={`px-2 py-1 rounded-lg text-xs border ${
+            className={`px-3 py-1.5 rounded-lg text-sm border ${
                 checked ? "bg-green-500 text-white font-semibold" : "bg-white"
             }`}
         >

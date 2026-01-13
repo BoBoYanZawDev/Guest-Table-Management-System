@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Head, usePage } from "@inertiajs/react";
+import { Empty } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FlashMessage from "@/Components/FlashMessage";
 import MoveModal from "@/Components/Frontend/MoveModal";
 import TableBlock from "@/Components/Frontend/TableBlock";
@@ -68,7 +70,12 @@ export default function GuestTable() {
     }
 
     function focusGuest(guestId) {
-        setFocusedGuestId(guestId);
+        setFocusedGuestId(null);
+        setTimeout(() => setFocusedGuestId(guestId), 0);
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     return (
@@ -224,17 +231,31 @@ export default function GuestTable() {
                             className="grid gap-6 md:grid-cols-2"
                             // style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}
                         >
-                            {visibleTables.map((t) => (
-                                <TableBlock
-                                    key={t.id}
-                                    table={t}
-                                    onClickGuest={openGuest}
-                                    focusedGuestId={focusedGuestId}
-                                />
-                            ))}
+                            {visibleTables.length === 0 ? (
+                                <div className="md:col-span-2 flex justify-center py-8">
+                                    <Empty description="No tables available" />
+                                </div>
+                            ) : (
+                                visibleTables.map((t) => (
+                                    <TableBlock
+                                        key={t.id}
+                                        table={t}
+                                        onClickGuest={openGuest}
+                                        focusedGuestId={focusedGuestId}
+                                    />
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
+                <button
+                    type="button"
+                    onClick={scrollToTop}
+                    className="fixed bottom-6 right-6 rounded-full border border-black/10 bg-white/90 p-3 text-xs font-semibold shadow-md hover:bg-white"
+                    aria-label="Scroll to top"
+                >
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-up" />
+                </button>
             </div>
                 <MoveModal
                     open={modalOpen}

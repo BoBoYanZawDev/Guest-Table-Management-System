@@ -13,14 +13,6 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
   const [guestName, setGuestName] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const bodyMaxHeight = useMemo(() => {
-    const capacity = table.capacity || seats.length || 0;
-    const rowHeight = 36;
-    const minHeight = 250;
-    const maxHeight = 600;
-    return Math.min(maxHeight, Math.max(minHeight, capacity * rowHeight));
-  }, [table, seats.length]);
-
   useEffect(() => {
     if (!focusedGuestId) return;
     const el = rowRefs.current.get(focusedGuestId);
@@ -65,14 +57,14 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
       </div>
 
       {/* Header */}
-      <div className="grid grid-cols-[60px_1fr_120px] border-b border-black/10 text-sm font-semibold">
-        <div className="p-2 border-r border-black/10">No</div>
+      <div className="grid grid-cols-[60px_1fr_150px] border-b border-black/10 text-sm font-semibold">
+        <div className="p-2 border-r border-black/10 text-center">No</div>
         <div className="p-2 border-r border-black/10">Name</div>
         <div className="p-2">Status</div>
       </div>
 
       {/* Rows */}
-      <div className="overflow-auto" style={{ maxHeight: bodyMaxHeight }}>
+      <div>
         {seats.map((s) => {
           const g = s.assignment?.guest || null;
           const isFocused = g && g.id === focusedGuestId;
@@ -84,7 +76,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
               ref={(el) => {
                 if (g?.id && el) rowRefs.current.set(g.id, el);
               }}
-              className={`grid grid-cols-[60px_1fr_120px] border-b border-black/10 text-sm ${
+              className={`grid grid-cols-[60px_1fr_150px] border-b border-black/10 text-sm ${
                 isFocused
                   ? "bg-amber-100/45"
                   : isEmpty
@@ -92,7 +84,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                   : ""
               }`}
             >
-              <div className="p-2 border-r border-black/10">{s.seat_no}</div>
+              <div className="p-2 border-r border-black/10 text-center">{s.seat_no}</div>
 
               {g ? (
                 <button
@@ -104,7 +96,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                   {g.name}
                 </button>
               ) : isEditing ? (
-                <div className="p-2 border-r border-black/10">
+                <div className="p-1 py-2 border-r border-black/10">
                   <input
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
@@ -122,7 +114,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                 </div>
               )}
 
-              <div className="p-2">
+              <div className="p-2 flex items-center">
                 {g ? (
                   <StatusButton guest={g} />
                 ) : isEditing ? (
@@ -131,7 +123,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                       type="button"
                       onClick={saveGuest}
                       disabled={saving || !guestName.trim()}
-                      className="rounded-lg border border-black/10 px-2 py-1 text-xs font-semibold disabled:opacity-50"
+                      className="rounded-lg border border-black/10 px-3 py-1.5 text-sm font-semibold disabled:opacity-50"
                     >
                       Save
                     </button>
@@ -139,7 +131,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                       type="button"
                       onClick={cancelAdd}
                       disabled={saving}
-                      className="rounded-lg border border-black/10 px-2 py-1 text-xs font-semibold"
+                      className="rounded-lg border border-black/10 px-3 py-1.5 text-sm font-semibold"
                     >
                       Cancel
                     </button>
@@ -148,7 +140,7 @@ function TableBlock({ table, onClickGuest, focusedGuestId }) {
                   <button
                     type="button"
                     onClick={() => startAdd(s.seat_no)}
-                    className="rounded-lg border border-black/10 px-2 py-1 text-xs font-semibold"
+                    className="rounded-lg border border-black/10 px-3 py-1.5 text-sm font-semibold"
                   >
                     Add
                   </button>

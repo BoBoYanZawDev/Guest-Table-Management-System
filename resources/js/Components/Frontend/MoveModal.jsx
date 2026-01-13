@@ -34,7 +34,7 @@ function MoveModal({ open, onClose, tables, selectedGuest }) {
         setQ("");
         setResults([]);
         setToTableId("");
-        setSwapGuestId("");
+        setSwapGuestId(null);
     }, [open]);
 
     // search inside modal (JSON route)
