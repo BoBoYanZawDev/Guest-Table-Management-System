@@ -4,9 +4,6 @@ namespace App\Services;
 
 use Exception;
 use App\Models\User;
-use Hashids\Hashids;
-use Illuminate\Support\Facades\Storage;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class UserService
 {
@@ -18,8 +15,10 @@ class UserService
         $users = User::where('is_active', 1);
 
         if ($request->has('search') && !empty($request->search)) {
-            $users = $users->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('loginid', 'like', '%' . $request->search . '%');
+            $users = $users->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('loginid', 'like', '%' . $request->search . '%');
+            });
         }
         if ($paginate) {
             $users = $users->paginate(10)->withQueryString();
@@ -35,17 +34,11 @@ class UserService
     public function storeData($request)
     {
         try {
-            $path = null;
-            if ($request->hasFile('photo')) {
-                $photo = request('photo');
-                $path = '/storage/' . $photo->store('photo');
-            }
-
             User::create([
                 'name' => $request->name,
                 'loginid' => $request->loginid,
                 'email' => $request->email,
-                'password' => $request->password,
+                'password' => bcrypt($request->password),
             ]);
             return ['success', 'User created successfully.'];
         } catch (Exception $e) {

@@ -1,11 +1,23 @@
 [
     {
-        "name": "Report",
+        "name": "Guest",
         "children": [
             {
-                "name": "Ratings Reports",
-                "route": "rating.report",
+                "name": "Dashboard",
+                "route": "dashboard",
+                "icon": "chart-line",
+                "icon_type": "fas"
+            },
+            {
+                "name": "Tables",
+                "route": "guest_tables.index",
                 "icon": "fa-star",
+                "icon_type": "fas"
+            },
+            {
+                "name": "Users",
+                "route": "users.index",
+                "icon": "users",
                 "icon_type": "fas"
             }
         ]

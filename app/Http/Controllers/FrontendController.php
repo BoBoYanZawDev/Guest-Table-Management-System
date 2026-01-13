@@ -33,6 +33,7 @@ class FrontendController extends Controller
         $tables = GuestTable::with(['guests' => function ($query) {
             $query->select('id', 'name', 'table_id', 'seat_no', 'checked_in');
         }])
+            ->where('is_active', 1)
             ->orderBy('id')
             ->get()
             ->map(function ($table) {
@@ -125,7 +126,7 @@ class FrontendController extends Controller
                 return back()->with('error', 'No free seats in that table.');
             }
         } else {
-            $tables = GuestTable::orderBy('id')->get();
+            $tables = GuestTable::where('is_active', 1)->orderBy('id')->get();
             $table = null;
             $seatNo = null;
 
@@ -141,7 +142,7 @@ class FrontendController extends Controller
             if (! $table || ! $seatNo) {
                 return back()->with('error', 'No free seats available.');
             }
-        }   
+        }
 
         $guest->update([
             'table_id' => $table->id,

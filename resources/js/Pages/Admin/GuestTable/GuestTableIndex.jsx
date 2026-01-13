@@ -1,31 +1,35 @@
 import CustomModal from "@/Components/Modal";
 import { Head, router, useForm } from "@inertiajs/react";
-import { Empty, Input, Pagination } from "antd";
+import { Empty, Pagination } from "antd";
 import { useEffect, useState } from "react";
 import { Popconfirm, Button } from "antd";
 import { formatDate } from "@/Utils/format";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import FlashMessage from "@/Components/FlashMessage";
 import { Edit2, Trash2 } from "lucide-react";
 
-function UserIndex({ users }) {
-    const brandData = users.data;
-    const [search, setSearch] = useState("");
+function GuestTableIndex({ tables }) {
+    const tableData = tables.data;
+    const initialFilters = new URL(window.location.href).searchParams;
+    const [search, setSearch] = useState(initialFilters.get("search") || "");
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             const currentUrl = new URL(window.location.href);
             const currentSearch = currentUrl.searchParams.get("search") || "";
+            const nextSearch = search.trim();
 
-            if (search.trim() === currentSearch.trim()) return;
+            if (nextSearch === currentSearch.trim()) return;
 
-            if (search.trim() === "") {
-                router.get(route("users.index"), {}, { replace: true });
+            if (nextSearch === "") {
+                router.get(route("guest_tables.index"), {}, { replace: true });
             } else {
                 router.get(
-                    route("users.index"),
-                    { search },
-                    { preserveState: true, replace: true }
+                    route("guest_tables.index"),
+                    { search: nextSearch },
+                    {
+                        preserveState: true,
+                        replace: true,
+                    }
                 );
             }
         }, 400);
@@ -45,62 +49,53 @@ function UserIndex({ users }) {
         resetAndClearErrors,
     } = useForm({
         name: "",
-        email: "",
-        loginid: null,
-        password: "",
-        password_confirmation: "",
+        capacity: 10,
     });
 
     // Modal state
     const [createModal, setCreateModal] = useState(false);
-    const [editingBrand, setEditingBrand] = useState(null);
+    const [editingTable, setEditingTable] = useState(null);
 
     const closeModal = () => {
         setCreateModal(false);
         setTimeout(() => {
-            setEditingBrand(null);
+            setEditingTable(null);
         }, 100);
         resetAndClearErrors();
     };
+
     // Prefill when editing
     useEffect(() => {
-        if (editingBrand) {
-            setData((prev) => ({
-                ...prev,
-                name: editingBrand.name,
-                email: editingBrand.email,
-                loginid: editingBrand.loginid,
-                password: "",
-                password_confirmation: "",
-            }));
+        if (editingTable) {
+            setData({
+                name: editingTable.name,
+                capacity: editingTable.capacity,
+            });
         } else {
             resetAndClearErrors();
         }
-    }, [editingBrand]);
+    }, [editingTable]);
 
-    // Create or update brand
-    const saveBrand = (e) => {
+    // Create or update guest table
+    const saveTable = (e) => {
         e.preventDefault();
-        if (editingBrand) {
-            put(route("users.update", editingBrand.id), {
-                onSuccess: () => {
-                    closeModal();
-                },
+
+        if (editingTable) {
+            // Edit Mode
+            put(route("guest_tables.update", editingTable.id), {
+                onSuccess: () => closeModal(),
             });
         } else {
             // Create Mode
-            post(route("users.store"), {
-                onSuccess: () => {
-                    closeModal();
-                },
+            post(route("guest_tables.store"), {
+                onSuccess: () => closeModal(),
             });
         }
     };
-
     // for paginate
     const pageChange = (page) => {
         router.get(
-            route("users.index"),
+            route("guest_tables.index"),
             { page, search },
             {
                 preserveScroll: true,
@@ -110,19 +105,21 @@ function UserIndex({ users }) {
         );
     };
     const deleteConfirm = (id) => {
-        destroy(route("users.destroy", id));
+        destroy(route("guest_tables.destroy", id));
     };
 
     return (
         <>
-            <Head title="User" />
+            <Head title="Guest Table" />
             <FlashMessage />
             {/* for modal */}
-            <CustomModal show={createModal} maxWidth="lg" onClose={closeModal}>
+            <CustomModal show={createModal} maxWidth="sm" onClose={closeModal}>
                 <div className="px-4 pt-4">
-                    <form onSubmit={saveBrand}>
+                    <form onSubmit={saveTable}>
                         <header className="text-lg font-medium text-gray-900 dark:text-slate-100">
-                            {editingBrand ? "Edit User" : "Create User"}
+                            {editingTable
+                                ? "Edit Guest Table"
+                                : "Create Guest Table"}
                         </header>
                         <div className="card-body">
                             <div className="form-group">
@@ -155,123 +152,32 @@ function UserIndex({ users }) {
                             <div className="form-group">
                                 <div className="mt-4">
                                     <label
-                                        htmlFor="email"
+                                        htmlFor="capacity"
                                         className="block text-sm font-medium text-gray-700 dark:text-slate-300"
                                     >
-                                        Email
+                                        Capacity
                                     </label>
                                     <input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        placeholder="Enter Email"
-                                        value={data.email}
-                                        onChange={(e) =>
-                                            setData("email", e.target.value)
-                                        }
-                                        className="mt-1 block w-full border border-gray-300 dark:border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
-                                    />
-                                </div>
-                                {errors.email && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                        {errors.email}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="form-group">
-                                <div className="mt-4">
-                                    <label
-                                        htmlFor="loginid"
-                                        className="block text-sm font-medium text-gray-700 dark:text-slate-300"
-                                    >
-                                        Login ID
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="loginid"
-                                        id="loginid"
-                                        placeholder="Enter Login ID"
-                                        value={data.loginid}
-                                        onChange={(e) =>
-                                            setData("loginid", e.target.value)
-                                        }
-                                        className="mt-1 block w-full border border-gray-300 dark:border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
-                                    />
-                                </div>
-                                {errors.loginid && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                        {errors.loginid}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="form-group">
-                                <div className="mt-4">
-                                    <label
-                                        htmlFor="password"
-                                        className="block text-sm font-medium text-gray-700 dark:text-slate-300"
-                                    >
-                                        Password{" "}
-                                        {editingBrand && (
-                                            <small>
-                                                (Leave blank to keep current
-                                                password)
-                                            </small>
-                                        )}
-                                    </label>
-                                    <Input.Password
-                                        value={data.password}
-                                        onChange={(e) =>
-                                            setData("password", e.target.value)
-                                        }
-                                        name="password"
-                                        id="password"
-                                        placeholder="Enter password"
-                                        iconRender={(visible) =>
-                                            visible ? (
-                                                <EyeTwoTone />
-                                            ) : (
-                                                <EyeInvisibleOutlined />
-                                            )
-                                        }
-                                    />
-                                </div>
-                                {errors.password && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                        {errors.password}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="form-group">
-                                <div className="mt-4">
-                                    <label
-                                        htmlFor="password"
-                                        className="block text-sm font-medium text-gray-700 dark:text-slate-300"
-                                    >
-                                        Confirm Password
-                                    </label>
-                                    <Input.Password
-                                        value={data.password_confirmation}
+                                        type="number"
+                                        min="1"
+                                        name="capacity"
+                                        id="capacity"
+                                        placeholder="10"
+                                        value={data.capacity ?? ""}
                                         onChange={(e) =>
                                             setData(
-                                                "password_confirmation",
-                                                e.target.value
+                                                "capacity",
+                                                e.target.value === ""
+                                                    ? null
+                                                    : Number(e.target.value)
                                             )
                                         }
-                                        name="password_confirmation"
-                                        id="password_confirmation"
-                                        placeholder="Enter password"
-                                        iconRender={(visible) =>
-                                            visible ? (
-                                                <EyeTwoTone />
-                                            ) : (
-                                                <EyeInvisibleOutlined />
-                                            )
-                                        }
+                                        className="mt-1 block w-full border border-gray-300 dark:border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
                                     />
                                 </div>
-                                {errors.password_confirmation && (
+                                {errors.capacity && (
                                     <div className="text-red-500 text-sm mt-1">
-                                        {errors.password_confirmation}
+                                        {errors.capacity}
                                     </div>
                                 )}
                             </div>
@@ -284,10 +190,14 @@ function UserIndex({ users }) {
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className="btn-primary">
+                            <button
+                                type="submit"
+                                className="btn-primary"
+                                disabled={processing}
+                            >
                                 {processing
                                     ? "Saving..."
-                                    : editingBrand
+                                    : editingTable
                                     ? "Update"
                                     : "Create"}
                             </button>
@@ -295,27 +205,29 @@ function UserIndex({ users }) {
                     </form>
                 </div>
             </CustomModal>
-
-            <h3 className="text-xl font-bold mb-3 dark:text-white">Users</h3>
+            <h3 className="text-xl font-bold mb-3 dark:text-white">
+                Guest Tables
+            </h3>
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-4 sm:p-6 text-gray-900 dark:text-slate-100">
-                <div className="flex justify-between align-center">
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Search ..."
-                            className="mt-1 block w-full border border-gray-300 dark:border-slate-700 rounded-md shadow-sm py-1 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+                <div className="flex justify-between  align-center mt-1">
+                    <div className="flex gap-3 items-center ">
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Search ..."
+                                className=" block w-full border border-gray-300 dark:border-slate-700 rounded-md shadow-sm py-1 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
                     </div>
                     <div className="text-right">
                         <button
                             type="button"
                             className="btn-primary"
                             onClick={() => {
-                                setEditingBrand(null);
+                                setEditingTable(null);
                                 setCreateModal(true);
-                                resetAndClearErrors();
                             }}
                         >
                             Add
@@ -323,10 +235,9 @@ function UserIndex({ users }) {
                     </div>
                 </div>
                 <small className="text-xs text-slate-700 mb-4">
-                    {" "}
-                    Total - {users.total}
+                    Total - {tables.total}
                 </small>
-                <div className="overflow-x-auto overflow-y-hidden -mx-4 sm:mx-0 ">
+                <div className="overflow-x-auto overflow-y-hidden -mx-4 sm:mx-0">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
                         <thead className="bg-gray-100 dark:bg-slate-900">
                             <tr>
@@ -337,10 +248,7 @@ function UserIndex({ users }) {
                                     Name
                                 </th>
                                 <th className="px-4 py-3 text-left text-xs font-extrabold text-gray-500 uppercase tracking-wider">
-                                    Login ID
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-extrabold text-gray-500 uppercase tracking-wider">
-                                    Email
+                                    Capacity
                                 </th>
                                 <th className="px-4 py-3 text-left text-xs font-extrabold text-gray-500 uppercase tracking-wider">
                                     Created
@@ -352,45 +260,41 @@ function UserIndex({ users }) {
                         </thead>
 
                         <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
-                            {brandData && brandData.length > 0 ? (
-                                brandData.map((b, index) => (
+                            {tableData && tableData.length > 0 ? (
+                                tableData.map((t, index) => (
                                     <tr
-                                        key={b.id}
+                                        key={t.id}
                                         className="hover:bg-gray-50 dark:hover:bg-slate-900"
                                     >
                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-slate-200">
-                                            {(users.from ?? 0) + index}
+                                            {(tables.from ?? 0) + index}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-slate-100">
-                                            {b.name}
+                                            {t.name}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-slate-100">
-                                            {b.loginid}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-slate-100">
-                                            {b.email || "-"}
+                                            {t.capacity}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-slate-300">
-                                            {formatDate(b.created_at)}
+                                            {formatDate(t.created_at)}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
                                             <Button
                                                 color="primary"
                                                 variant="outlined"
-                                                className="text-xs btn py-1 mr-2 bg-blue-500"
+                                                className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-slate-700 rounded-lg transition-all border border-blue-200 dark:border-slate-600 me-2"
                                                 onClick={() => {
-                                                    setEditingBrand(b);
+                                                    setEditingTable(t);
                                                     setCreateModal(true);
                                                 }}
                                             >
                                                 <Edit2 className="w-4 h-4" />
                                             </Button>
-
                                             <Popconfirm
                                                 title="Delete"
                                                 description="Are you sure to delete ?"
                                                 onConfirm={() =>
-                                                    deleteConfirm(b.id)
+                                                    deleteConfirm(t.id)
                                                 }
                                                 okText="Yes"
                                                 cancelText="No"
@@ -410,7 +314,7 @@ function UserIndex({ users }) {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center">
+                                    <td colSpan="5" className="text-center">
                                         <Empty
                                             image={Empty.PRESENTED_IMAGE_SIMPLE}
                                         />
@@ -419,12 +323,12 @@ function UserIndex({ users }) {
                             )}
                         </tbody>
                     </table>
-                    {users && users.total > 10 && (
+                    {tables && tables.total > 10 && (
                         <div className="mt-4 flex justify-center">
                             <Pagination
-                                total={users.total}
-                                current={users.current_page}
-                                pageSize={users.per_page}
+                                total={tables.total}
+                                current={tables.current_page}
+                                pageSize={tables.per_page}
                                 onChange={pageChange}
                                 showSizeChanger={false} // hide "items per page" dropdown
                             />
@@ -436,4 +340,4 @@ function UserIndex({ users }) {
     );
 }
 
-export default UserIndex;
+export default GuestTableIndex;
