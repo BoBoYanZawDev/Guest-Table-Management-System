@@ -1,0 +1,13 @@
+[
+    {
+        "name": "Report",
+        "children": [
+            {
+                "name": "Ratings Reports",
+                "route": "rating.report",
+                "icon": "fa-star",
+                "icon_type": "fas"
+            }
+        ]
+    }
+]

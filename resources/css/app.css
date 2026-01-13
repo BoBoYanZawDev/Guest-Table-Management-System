@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn-primary {
+        @apply bg-blue-600 text-white px-2 py-1 text-sm rounded-md mb-3 hover:opacity-90 transition;
+    }
+    .btn {
+        @apply px-2 py-1 text-xs rounded-md  hover:opacity-90 transition;
+    }
+}
+
+@font-face {
+    font-family: "Pyidaungsu";
+    src: url("/assets/fonts/Pyidaungsu-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    /* Consider adding woff2/woff formats for better browser support/performance */
+}
+
+@font-face {
+    font-family: "Pyidaungsu";
+    src: url("/assets/fonts/Pyidaungsu-Bold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* You can apply it globally or use Tailwind classes */
+.myanmar,
+body span {
+    font-family: "Pyidaungsu", sans-serif !important;
+}
+
+
+@media (max-width: 450px) {
+    .footer-mt {
+        margin-top: 1rem !important;
+    }
+}
+
+@media (max-width: 378px) {
+    .con-pading{
+        padding-top: 0 !important;
+    }
+    .con-margin{
+        margin-top: 1rem !important;
+    }
+}
+
+/* @media (max-width: 400px) {
+    .footer-mt {
+        margin-top: 3rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .footer-mt {
+        margin-top: 1.3rem !important;
+    }
+    .content-margin{
+        margin-top: 0 !important;
+    }
+} */
