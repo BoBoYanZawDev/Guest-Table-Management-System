@@ -46,7 +46,7 @@ export default function Login({ status, canResetPassword }) {
 
                             <div className="mb-6">
                                 <h2 className="text-2xl text-center font-extrabold text-gray-900 mb-2">
-                                    Rating Management System
+                                  Guest Table Management System
                                 </h2>
                                 <p className="text-gray-600 text-sm sm:text-base text-center">
                                     Sign in to your account to continue
