@@ -3,12 +3,6 @@
         "name": "Guest",
         "children": [
             {
-                "name": "Dashboard",
-                "route": "dashboard",
-                "icon": "chart-line",
-                "icon_type": "fas"
-            },
-            {
                 "name": "Tables",
                 "route": "guest_tables.index",
                 "icon": "fa-star",
