@@ -124,4 +124,20 @@ class GuestService
 
         return ['success', $message];
     }
+
+    private function seatTaken($tableId, $seatNo, $ignoreGuestId = null): bool
+    {
+        if (empty($seatNo)) {
+            return false;
+        }
+
+        $query = Guest::where('table_id', $tableId)
+            ->where('seat_no', $seatNo);
+
+        if ($ignoreGuestId) {
+            $query->where('id', '!=', $ignoreGuestId);
+        }
+
+        return $query->exists();
+    }
 }
