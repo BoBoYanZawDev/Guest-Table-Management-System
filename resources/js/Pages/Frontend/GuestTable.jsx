@@ -226,9 +226,9 @@ export default function GuestTable() {
                         )}
                     </div>
 
-                    <div className="rounded-3xl border border-black/10 bg-white/70 p-4 shadow-sm">
+                    <div className="rounded-3xl border border-black/10 bg-white/70 p-2 shadow-sm">
                         <div
-                            className="grid gap-6 md:grid-cols-2"
+                            className="grid gap-3 md:grid-cols-2"
                             // style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}
                         >
                             {visibleTables.length === 0 ? (
