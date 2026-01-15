@@ -115,7 +115,7 @@ export default function GuestTable() {
 
                     <FlashMessage />
 
-                    <div className="grid gap-3 sm:grid-cols-4">
+                    <div className="grid gap-3 md:grid-cols-4 grid-cols-2">
                         <div className="rounded-2xl border border-black/10 bg-white/80 p-4">
                             <div className="text-xs font-semibold uppercase text-gray-500">
                                 Tables
