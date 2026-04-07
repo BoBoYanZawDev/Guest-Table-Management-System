@@ -33,7 +33,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
                     <div className="mb-1 flex justify-center w-full mt-2">
                         <img
                             src={
-                                company?.logo ? company.logo : "/linn_logo.png"
+                                company?.logo ? company.logo : "/login_icont.png"
                             }
                             alt="Linn Logo"
                             className={`object-contain w-20 ${

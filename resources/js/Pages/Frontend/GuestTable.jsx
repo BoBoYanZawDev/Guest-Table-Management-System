@@ -85,8 +85,8 @@ export default function GuestTable() {
                 <div className="mx-auto max-w-7xl space-y-3">
                     <div className="flex justify-center">
                         <img
-                            src="/linn_logo1.png"
-                            alt="Linn logo"
+                            src="/login_icont.png"
+                            alt="logo"
                             className="h-16 w-auto"
                         />
                     </div>

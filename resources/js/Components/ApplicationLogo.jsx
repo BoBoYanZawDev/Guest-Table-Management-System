@@ -5,7 +5,7 @@ export default function ApplicationLogo(props) {
         console.log(company)
     return (
         <div className="flex align-center justify-center">
-            <img loading="eager" src={company?.logo ? company.logo : "/linn_logo.png"} alt="" {...props} />
+            <img loading="eager" src={company?.logo ? company.logo : "/login_icont.png"} alt="" {...props} />
         </div>
         //  className="w-[12%] h-auto"
         // <svg
