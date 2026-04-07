@@ -198,7 +198,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
             <div className="px-4 py-4 border-t border-gray-200 text-sm text-gray-500 dark:border-slate-700 dark:text-slate-300 text-center">
                 {!collapsed && (
                     <div>
-                        © {new Date().getFullYear()}. Developed By Linn R&D
+                        © {new Date().getFullYear()}.
                     </div>
                 )}
             </div>
